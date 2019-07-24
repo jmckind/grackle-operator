@@ -63,9 +63,26 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
-	// TODO(user): Modify this to be the types you create that are owned by the primary resource
+	// Watch for changes to secondary resource Deployments and requeue the owner Grackle
+	err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &k8sv1alpha1.Grackle{},
+	})
+	if err != nil {
+		return err
+	}
+
 	// Watch for changes to secondary resource Pods and requeue the owner Grackle
 	err = c.Watch(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &k8sv1alpha1.Grackle{},
+	})
+	if err != nil {
+		return err
+	}
+
+	// Watch for changes to secondary resource Services and requeue the owner Grackle
+	err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
 		IsController: true,
 		OwnerType:    &k8sv1alpha1.Grackle{},
 	})
@@ -103,7 +120,6 @@ func (r *ReconcileGrackle) Reconcile(request reconcile.Request) (reconcile.Resul
 		return reconcile.Result{}, err
 	} else if grackle == nil {
 		// Request object not found, could have been deleted after reconcile request.
-		reqLogger.Info("grackle instance not found")
 		return reconcile.Result{}, nil
 	}
 
@@ -118,15 +134,15 @@ func (r *ReconcileGrackle) Reconcile(request reconcile.Request) (reconcile.Resul
 		return reconcile.Result{Requeue: true}, nil
 	}
 
-	// Reconcile Ingest process
+	// Reconcile ingest resources
 	if err := r.reconcileIngest(grackle); err != nil {
 		reqLogger.Error(err, "unable to reconcile ingest resources")
 		return reconcile.Result{}, err
 	}
 
-	// Reconcile Web UI process
+	// Reconcile web UI resources
 	if err := r.reconcileWeb(grackle); err != nil {
-		reqLogger.Error(err, "unable to reconcile web ui resources")
+		reqLogger.Error(err, "unable to reconcile web resources")
 		return reconcile.Result{}, err
 	}
 
@@ -150,7 +166,7 @@ func (r *ReconcileGrackle) fetchGrackleInstance(request reconcile.Request) (*k8s
 	return grackle, nil
 }
 
-// reconcileIngest will reconcile the Grackle ingest process.
+// reconcileIngest will reconcile the Grackle ingest resources.
 func (r *ReconcileGrackle) reconcileIngest(cr *k8sv1alpha1.Grackle) error {
 	ingest := cr.Spec.Ingest
 	if ingest == nil || len(ingest.Track) <= 0 {
@@ -201,10 +217,12 @@ func (r *ReconcileGrackle) reconcileIngest(cr *k8sv1alpha1.Grackle) error {
 		return err
 	}
 
-	return nil
+	// Create event for new pod added.
+	event := newIngestPodEvent(cr, track.Value)
+	return r.client.Create(context.TODO(), event)
 }
 
-// reconcileWeb will reconcile the Grackle web UI process.
+// reconcileWeb will reconcile the Grackle web UI resources.
 func (r *ReconcileGrackle) reconcileWeb(cr *k8sv1alpha1.Grackle) error {
 	depFound := &appsv1.Deployment{}
 	err := r.client.Get(context.TODO(), types.NamespacedName{Name: fmt.Sprintf("%s-web", cr.Name), Namespace: cr.Namespace}, depFound)
