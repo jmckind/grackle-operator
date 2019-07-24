@@ -112,6 +112,6 @@ func newIngestPodEvent(cr *v1alpha1.Grackle, track string) *corev1.Event {
 	event := newEvent(cr)
 	event.Type = corev1.EventTypeNormal
 	event.Reason = "New Ingest Pod"
-	event.Message = fmt.Sprintf("New ingest pod added for track: %s", track)
+	event.Message = fmt.Sprintf("New ingest pod added to track: %s", track)
 	return event
 }
