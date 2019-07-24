@@ -9,4 +9,4 @@ spec:
     track:
       - kubernetes
       - golang
-    twitterSecret: my-twitter-credentials
+    twitterSecret: grackle-twitter-credentials
