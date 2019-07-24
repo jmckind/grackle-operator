@@ -27,11 +27,11 @@ import (
 // newGrackleWebService returns a Deployment resource for the Web UI.
 func newGrackleWebDeployment(cr *k8sv1alpha1.Grackle) *appsv1.Deployment {
 	labels := labelsForCluster(cr)
-	labels["component"] = "web"
+	labels[LabelComponentKey] = LabelComponentWeb
 
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-web", cr.Name),
+			Name:      fmt.Sprintf("%s-%s", cr.Name, LabelComponentWeb),
 			Namespace: cr.Namespace,
 			Labels:    labels,
 		},
@@ -46,8 +46,8 @@ func newGrackleWebDeployment(cr *k8sv1alpha1.Grackle) *appsv1.Deployment {
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image:   fmt.Sprintf("jmckind/grackle:%s", cr.Spec.Web.Version),
-						Name:    "web",
+						Image:   fmt.Sprintf("%s:%s", DefaultGrackleImageName, cr.Spec.Web.Version),
+						Name:    LabelComponentWeb,
 						Command: []string{"/grackle-web"},
 						Env: []corev1.EnvVar{{
 							Name:  "GRK_RETHINKDB_HOST",
@@ -67,7 +67,7 @@ func newGrackleWebDeployment(cr *k8sv1alpha1.Grackle) *appsv1.Deployment {
 // newGrackleWebService returns a Service resource for the Web UI.
 func newGrackleWebService(cr *k8sv1alpha1.Grackle) *corev1.Service {
 	labels := labelsForCluster(cr)
-	labels["component"] = "web"
+	labels[LabelComponentKey] = LabelComponentWeb
 
 	return &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
@@ -78,7 +78,7 @@ func newGrackleWebService(cr *k8sv1alpha1.Grackle) *corev1.Service {
 		Spec: corev1.ServiceSpec{
 			Selector: labels,
 			Ports: []corev1.ServicePort{{
-				Name:       "web",
+				Name:       LabelComponentWeb,
 				Port:       80,
 				TargetPort: intstr.FromInt(8000),
 			}},

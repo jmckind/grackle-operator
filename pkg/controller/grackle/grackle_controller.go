@@ -174,7 +174,7 @@ func (r *ReconcileGrackle) reconcileIngest(cr *k8sv1alpha1.Grackle) error {
 	}
 
 	labels := labelsForCluster(cr)
-	labels["component"] = "ingest"
+	labels[LabelComponentKey] = LabelComponentIngest
 	labelSelector := k8slabels.SelectorFromSet(labels)
 	listOpts := &client.ListOptions{Namespace: cr.Namespace, LabelSelector: labelSelector}
 
@@ -273,12 +273,12 @@ func (r *ReconcileGrackle) setDefaults(cr *k8sv1alpha1.Grackle) bool {
 	// Defaults for Ingest
 	if cr.Spec.Ingest == nil {
 		cr.Spec.Ingest = &k8sv1alpha1.IngestSpec{
-			Version: "latest",
+			Version: DefaultGrackleImageTag,
 		}
 		changed = true
 	} else {
 		if len(cr.Spec.Ingest.Version) <= 0 {
-			cr.Spec.Ingest.Version = "latest"
+			cr.Spec.Ingest.Version = DefaultGrackleImageTag
 			changed = true
 		}
 	}
@@ -287,7 +287,7 @@ func (r *ReconcileGrackle) setDefaults(cr *k8sv1alpha1.Grackle) bool {
 	if cr.Spec.Web == nil {
 		cr.Spec.Web = &k8sv1alpha1.WebSpec{
 			Replicas: &DefaultWebReplicas,
-			Version:  "latest",
+			Version:  DefaultGrackleImageTag,
 		}
 		changed = true
 	} else {
@@ -296,7 +296,7 @@ func (r *ReconcileGrackle) setDefaults(cr *k8sv1alpha1.Grackle) bool {
 			changed = true
 		}
 		if len(cr.Spec.Web.Version) <= 0 {
-			cr.Spec.Ingest.Version = "latest"
+			cr.Spec.Ingest.Version = DefaultGrackleImageTag
 			changed = true
 		}
 	}

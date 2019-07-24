@@ -47,20 +47,20 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 	annotations[AnnotationIngestHash] = track.Checksum
 
 	labels := labelsForCluster(cr)
-	labels["component"] = "ingest"
+	labels[LabelComponentKey] = LabelComponentIngest
 
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations:  annotations,
-			GenerateName: cr.Name + "-ingest-",
+			GenerateName: fmt.Sprintf("%s-%s", cr.Name, LabelComponentIngest),
 			Namespace:    cr.Namespace,
 			Labels:       labels,
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
 				{
-					Name:    "ingest",
-					Image:   fmt.Sprintf("jmckind/grackle:%s", cr.Spec.Ingest.Version),
+					Name:    LabelComponentIngest,
+					Image:   fmt.Sprintf("%s:%s", DefaultGrackleImageName, cr.Spec.Ingest.Version),
 					Command: []string{"/grackle-ingest"},
 					Env: []corev1.EnvVar{{
 						Name:  "GRK_RETHINKDB_HOST",
@@ -111,7 +111,7 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 func newIngestPodEvent(cr *v1alpha1.Grackle, track string) *corev1.Event {
 	event := newEvent(cr)
 	event.Type = corev1.EventTypeNormal
-	event.Reason = "New Ingest Pod Added"
+	event.Reason = "New Ingest Pod"
 	event.Message = fmt.Sprintf("New ingest pod added for track: %s", track)
 	return event
 }

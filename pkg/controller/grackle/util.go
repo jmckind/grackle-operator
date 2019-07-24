@@ -29,11 +29,26 @@ var (
 	// AnnotationIngestHash is the annotation key for the ingest hash value.
 	AnnotationIngestHash = "k8s.mkz.io/grackle-ingest-hash"
 
-	// EnvOperatorPodName is the environment variable containig the operator pod name.
-	EnvOperatorPodName = "POD_NAME"
+	// DefaultGrackleImageName is the defualt image to use for Grackle.
+	DefaultGrackleImageName = "quay.io/jmckind/grackle"
+
+	// DefaultGrackleImageTag is the defualt tag to use for the Grackle image.
+	DefaultGrackleImageTag = "latest"
 
 	// DefaultWebReplicas is the number of Web UI pods to create by default.
 	DefaultWebReplicas int32 = 2
+
+	// EnvOperatorPodName is the environment variable containig the operator pod name.
+	EnvOperatorPodName = "POD_NAME"
+
+	// LabelComponentKey is the key for the component label.
+	LabelComponentKey = "component"
+
+	// LabelComponentIngest is the ingest value for the component label.
+	LabelComponentIngest = "ingest"
+
+	// LabelComponentWeb is the web value for the component label.
+	LabelComponentWeb = "web"
 )
 
 // defaultLabels returns the default set of labels for the cluster.
