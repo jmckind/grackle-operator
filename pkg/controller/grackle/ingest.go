@@ -68,7 +68,7 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 						Name: "GRK_TWITTER_ACCESS_TOKEN",
 						ValueFrom: &corev1.EnvVarSource{
 							SecretKeyRef: &corev1.SecretKeySelector{
-								LocalObjectReference: corev1.LocalObjectReference{Name: "grackle-twitter-credentials"},
+								LocalObjectReference: corev1.LocalObjectReference{Name: cr.Spec.Ingest.TwitterSecret},
 								Key:                  "twitter-access-token",
 							},
 						},
@@ -76,7 +76,7 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 						Name: "GRK_TWITTER_ACCESS_SECRET",
 						ValueFrom: &corev1.EnvVarSource{
 							SecretKeyRef: &corev1.SecretKeySelector{
-								LocalObjectReference: corev1.LocalObjectReference{Name: "grackle-twitter-credentials"},
+								LocalObjectReference: corev1.LocalObjectReference{Name: cr.Spec.Ingest.TwitterSecret},
 								Key:                  "twitter-access-secret",
 							},
 						},
@@ -84,7 +84,7 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 						Name: "GRK_TWITTER_CONSUMER_KEY",
 						ValueFrom: &corev1.EnvVarSource{
 							SecretKeyRef: &corev1.SecretKeySelector{
-								LocalObjectReference: corev1.LocalObjectReference{Name: "grackle-twitter-credentials"},
+								LocalObjectReference: corev1.LocalObjectReference{Name: cr.Spec.Ingest.TwitterSecret},
 								Key:                  "twitter-consumer-key",
 							},
 						},
@@ -92,7 +92,7 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 						Name: "GRK_TWITTER_CONSUMER_SECRET",
 						ValueFrom: &corev1.EnvVarSource{
 							SecretKeyRef: &corev1.SecretKeySelector{
-								LocalObjectReference: corev1.LocalObjectReference{Name: "grackle-twitter-credentials"},
+								LocalObjectReference: corev1.LocalObjectReference{Name: cr.Spec.Ingest.TwitterSecret},
 								Key:                  "twitter-consumer-secret",
 							},
 						},
