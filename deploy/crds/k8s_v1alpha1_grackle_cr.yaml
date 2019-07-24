@@ -1,0 +1,12 @@
+apiVersion: k8s.mkz.io/v1alpha1
+kind: Grackle
+metadata:
+  name: example
+spec:
+  datastore:
+    host: grackle-rethinkdb
+  ingest:
+    track:
+      - kubernetes
+      - golang
+    twitterSecret: my-twitter-credentials

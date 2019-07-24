@@ -1,0 +1,81 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: grackles.k8s.mkz.io
+spec:
+  group: k8s.mkz.io
+  names:
+    kind: Grackle
+    listKind: GrackleList
+    plural: grackles
+    singular: grackle
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            datastore:
+              description: Datastore is the specification for the storage of Tweets.
+              properties:
+                host:
+                  description: Host is the hostname/IP address for the datastore.
+                  type: string
+              required:
+              - host
+              type: object
+            ingest:
+              description: Ingest is the specification for the ingest of Tweets.
+              properties:
+                track:
+                  description: Track is a slice of search terms to ingest. Each list
+                    item is a comma-delimited string of keywords for a seperate Twitter
+                    stream.
+                  items:
+                    type: string
+                  type: array
+                twitterSecret:
+                  description: TwitterSecret is the name of a secret containing Twitter
+                    API credentials.
+                  type: string
+                version:
+                  description: Version is the Grackle image tag to use for ingest.
+                  type: string
+              type: object
+            web:
+              description: Web is the specification for the Web UI.
+              properties:
+                replicas:
+                  description: Replicas is the number of web UI nodes to provision.
+                  format: int32
+                  type: integer
+                version:
+                  description: Version is the Grackle image tag to use for the web
+                    UI.
+                  type: string
+              type: object
+          type: object
+        status:
+          properties:
+            phase:
+              type: string
+          type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true

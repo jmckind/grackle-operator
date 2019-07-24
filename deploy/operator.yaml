@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grackle-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: grackle-operator
+  template:
+    metadata:
+      labels:
+        name: grackle-operator
+    spec:
+      serviceAccountName: grackle-operator
+      containers:
+        - name: grackle-operator
+          image: jmckind/grackle-operator:latest
+          command:
+          - grackle-operator
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "grackle-operator"
+          resources: {}
