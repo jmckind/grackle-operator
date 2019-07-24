@@ -17,6 +17,7 @@ package grackle
 import (
 	"fmt"
 
+	"github.com/jmckind/grackle-operator/pkg/apis/k8s/v1alpha1"
 	k8sv1alpha1 "github.com/jmckind/grackle-operator/pkg/apis/k8s/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -104,4 +105,13 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 			},
 		},
 	}
+}
+
+// newIngestPodEvent returns an event for
+func newIngestPodEvent(cr *v1alpha1.Grackle, track string) *corev1.Event {
+	event := newEvent(cr)
+	event.Type = corev1.EventTypeNormal
+	event.Reason = "New Ingest Pod Added"
+	event.Message = fmt.Sprintf("New ingest pod added for track: %s", track)
+	return event
 }
