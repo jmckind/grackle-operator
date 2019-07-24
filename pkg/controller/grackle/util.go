@@ -17,13 +17,20 @@ package grackle
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"os"
+	"time"
 
 	"github.com/jmckind/grackle-operator/pkg/apis/k8s/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
-	// AnnotationIngestHash is the annotation key for the ingest hash value
+	// AnnotationIngestHash is the annotation key for the ingest hash value.
 	AnnotationIngestHash = "k8s.mkz.io/grackle-ingest-hash"
+
+	// EnvOperatorPodName is the environment variable containig the operator pod name.
+	EnvOperatorPodName = "POD_NAME"
 
 	// DefaultWebReplicas is the number of Web UI pods to create by default.
 	DefaultWebReplicas int32 = 2
@@ -51,4 +58,30 @@ func hashValue(value string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(value))
 	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+}
+
+// newEvent returns a new event for the given Grackle resource.
+func newEvent(cr *v1alpha1.Grackle) *corev1.Event {
+	t := time.Now()
+	return &corev1.Event{
+		ObjectMeta: metav1.ObjectMeta{
+			GenerateName: cr.Name + "-",
+			Namespace:    cr.Namespace,
+		},
+		InvolvedObject: corev1.ObjectReference{
+			APIVersion:      cr.APIVersion,
+			Kind:            cr.Kind,
+			Name:            cr.Name,
+			Namespace:       cr.Namespace,
+			UID:             cr.UID,
+			ResourceVersion: cr.ResourceVersion,
+		},
+		Source: corev1.EventSource{
+			Component: os.Getenv(EnvOperatorPodName),
+		},
+		// Each cluster event is unique so it should not be collapsed with other events
+		FirstTimestamp: metav1.Time{Time: t},
+		LastTimestamp:  metav1.Time{Time: t},
+		Count:          int32(1),
+	}
 }
