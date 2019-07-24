@@ -15,7 +15,7 @@ spec:
       serviceAccountName: grackle-operator
       containers:
         - name: grackle-operator
-          image: jmckind/grackle-operator:latest
+          image: quay.io/jmckind/grackle-operator:latest
           command:
           - grackle-operator
           imagePullPolicy: Always
