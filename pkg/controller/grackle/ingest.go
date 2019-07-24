@@ -52,7 +52,7 @@ func newGrackleIngestPod(cr *k8sv1alpha1.Grackle, track *IngestTrack) *corev1.Po
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations:  annotations,
-			GenerateName: fmt.Sprintf("%s-%s", cr.Name, LabelComponentIngest),
+			GenerateName: fmt.Sprintf("%s-%s-", cr.Name, LabelComponentIngest),
 			Namespace:    cr.Namespace,
 			Labels:       labels,
 		},
