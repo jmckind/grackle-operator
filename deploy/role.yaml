@@ -1,7 +1,6 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  creationTimestamp: null
   name: grackle-operator
 rules:
 - apiGroups:
@@ -10,7 +9,6 @@ rules:
   - pods
   - services
   - endpoints
-  - persistentvolumeclaims
   - events
   - configmaps
   - secrets
@@ -20,9 +18,7 @@ rules:
   - apps
   resources:
   - deployments
-  - daemonsets
   - replicasets
-  - statefulsets
   verbs:
   - '*'
 - apiGroups:
@@ -47,15 +43,8 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - apps
-  resources:
-  - replicasets
-  verbs:
-  - get
-- apiGroups:
   - k8s.mkz.io
   resources:
-  - '*'
   - grackles
   verbs:
   - '*'
