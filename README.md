@@ -1,6 +1,7 @@
 # Grackle Operator
 
-A Kubernetes Operator for managing [Grackle](https://github.com/jmckind/grackle) clusters.
+A Kubernetes [Operator](https://coreos.com/operators/) for managing [Grackle](https://github.com/jmckind/grackle)
+clusters.
 
 ## Usage
 
